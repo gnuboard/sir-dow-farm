@@ -55,6 +55,12 @@ add_stylesheet('<link rel="stylesheet" href="'.G5_SHOP_SKIN_URL.'/style.css">', 
 			<button type="button" class="sit_use_li_title">내용보기 <i class="fa fa-caret-down" aria-hidden="true"></i></button>
 
             <div id="sit_use_con_<?php echo $i; ?>" class="sit_use_con">
+                <?php if ($row['od_count'] > 0) { ?>
+                <div class="sit_use_od_count">
+                    <?php echo $row['od_count']; ?>회 구매
+                </div>
+                <?php } ?>
+
                 <div class="sit_use_p">
                     <?php echo $is_content; // 사용후기 내용 ?> 
                 </div>

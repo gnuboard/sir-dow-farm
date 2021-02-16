@@ -447,6 +447,7 @@ box-shadow:0 0 6px rgba(0,0,0,0.2)}
 .sit_use_star img {width:80px}
 .sit_use_con {display:none;padding:10px 0 0}
 .sit_use_p {padding:10px;background:#f2f2f2}
+.sit_use_od_count {padding:0 0 10px;color:#860cff}
 .sit_use_cmd {text-align:right}
 .sit_use_cmd a.btn01 {padding:5px}
 #sit_use_wbtn {margin:0 0 10px}
@@ -541,6 +542,7 @@ box-shadow:0 0 6px rgba(0,0,0,0.2)}
 .review_summ>p span {display:block}
 .review_bt_cnt {margin:15px 0}
 .review_bt_cnt img {width:100%}
+.review_od_count {padding:10px 0 0;color:#860cff}
 
 .sps_reply {margin-top:10px;padding-top:10px;border-top:1px dotted #bbb}
 .sps_reply .sps_img {text-align:right;width:70px}

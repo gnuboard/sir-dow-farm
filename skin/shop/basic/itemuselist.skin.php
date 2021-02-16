@@ -96,7 +96,14 @@ add_stylesheet('<link rel="stylesheet" href="'.G5_SHOP_SKIN_URL.'/style.css">', 
 	            			</div>
 	            			
 	            			<div id="sps_con_<?php echo $i; ?>" class="review_bt_cnt">
-				                <?php echo $is_content; // 사용후기 내용 ?>
+                                <?php if ($row['od_count'] > 0) { ?>
+                                <div class="review_od_count">
+                                    <?php echo $row['od_count']; ?>회 구매
+                                </div>
+                                <?php } ?>
+
+                                <?php echo $is_content; // 사용후기 내용 ?>
+
 				                <?php
 				                if( !empty($row['is_reply_subject']) ){     //사용후기 답변이 있다면
 				                    $is_reply_content = get_view_thumbnail(conv_content($row['is_reply_content'], 1), $thumbnail_width);

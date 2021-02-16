@@ -55,7 +55,8 @@ if ($w == "")
                    is_subject = '$is_subject',
                    is_content = '$is_content',
                    is_time = '".G5_TIME_YMDHIS."',
-                   is_ip = '{$_SERVER['REMOTE_ADDR']}' ";
+                   is_ip = '{$_SERVER['REMOTE_ADDR']}',
+                   od_count = '{$member['mb_od_count']}' ";
     if (!$default['de_item_use_use'])
         $sql .= ", is_confirm = '1' ";
     sql_query($sql);

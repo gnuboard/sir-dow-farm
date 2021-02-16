@@ -725,6 +725,7 @@ background:url('img/select_arrow.png') no-repeat 96% 50%/* 화살표 아이콘 �
 
 .sit_use_con {display:none;margin-right:110px;margin-bottom:10px}
 .sit_use_p {margin:10px 0;padding:10px 0}
+.sit_use_od_count {padding:10px 0 0;color:#860cff}
 .sit_use_cmd {}
 
 .sit_use_reply {position:relative;border-top:1px dotted #bbb;margin:10px 0 0;padding:10px 0 0 40px}
@@ -818,6 +819,7 @@ background:url('img/select_arrow.png') no-repeat 96% 50%/* 화살표 아이콘 �
 
 .review_summ {background:#fcfcfc;border:2px solid #efeff1;padding:10px}
 .review_bt_cnt {margin:15px 0}
+.review_od_count {padding:0 0 10px;color:#860cff}
 
 .sps_reply {margin-top:10px;padding-top:10px;border-top:1px dotted #bbb}
 .sps_reply .sps_img {text-align:right;width:70px}

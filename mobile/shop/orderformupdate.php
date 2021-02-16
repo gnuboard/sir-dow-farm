@@ -804,6 +804,13 @@ if($is_member) {
     }
 }
 
+// 회원 누적 구매횟수 기록
+$sql = "
+    update {$g5['member_table']} set
+        mb_od_count = mb_od_count + 1
+    ";
+sql_query($sql);
+
 
 include_once(G5_SHOP_PATH.'/ordermail1.inc.php');
 include_once(G5_SHOP_PATH.'/ordermail2.inc.php');
