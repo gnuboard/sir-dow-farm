@@ -61,7 +61,7 @@ add_stylesheet('<link rel="stylesheet" href="'.$board_skin_url.'/style.css">', 0
         		<button type="button" class="btn_more_opt is_list_btn btn_b01 btn" title="게시판 리스트 옵션"><i class="fa fa-ellipsis-v" aria-hidden="true"></i><span class="sound_only">게시판 리스트 옵션</span></button>
         		<?php if ($is_checkbox) { ?>	
 		        <ul class="more_opt is_list_btn">  
-		            <li><button type="submit" name="btn_submit" value="선택삭제" onclick="document.pressed=this.value"><i class="fa fa-trash-o" aria-hidden="true"></i> 선택삭제</button></li>
+		            <li><button type="submit" name="btn_submit" value="영구삭제" onclick="document.pressed=this.value"><i class="fa fa-trash-o" aria-hidden="true"></i> 영구삭제</button></li>
 		            <li><button type="submit" name="btn_submit" value="선택복구" onclick="document.pressed=this.value"><i class="fa fa-files-o" aria-hidden="true"></i> 선택복구</button></li>
 		            <!--<li><button type="submit" name="btn_submit" value="선택이동" onclick="document.pressed=this.value"><i class="fa fa-arrows" aria-hidden="true"></i> 선택이동</button></li>-->
 		        </ul>
@@ -251,7 +251,7 @@ function fboardlist_submit(f) {
         return;
     }
 
-    if(document.pressed == "선택삭제") {
+    if(document.pressed == "영구삭제") {
         if (!confirm("선택한 게시물을 정말 삭제하시겠습니까?\n\n한번 삭제한 자료는 복구할 수 없습니다\n\n답변글이 있는 게시글을 선택하신 경우\n답변글도 선택하셔야 게시글이 삭제됩니다."))
             return false;
 

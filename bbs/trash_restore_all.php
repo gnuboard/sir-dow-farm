@@ -1,14 +1,9 @@
 <?php
-if (!defined('_GNUBOARD_')) exit; // 개별 페이지 접근 불가
+include_once('./_common.php');
 
-if(!$is_admin)
-    alert('접근 권한이 없습니다.', G5_URL);
+//$wr = sql_fetch(" select * from $write_table where wr_id = '$wr_id' ");
 
-// 4.11
-@include_once($board_skin_path.'/delete_all.head.skin.php');
-
-$count_write = 0;
-$count_comment = 0;
+$count_write = $count_comment = 0;
 
 $tmp_array = array();
 if ($wr_id) // 건별삭제
@@ -18,11 +13,59 @@ else // 일괄삭제
 
 $chk_count = count($tmp_array);
 
-if($chk_count > (G5_IS_MOBILE ? $board['bo_mobile_page_rows'] : $board['bo_page_rows']))
-    alert('올바른 방법으로 이용해 주십시오.');
+@include_once($board_skin_path.'/delete.head.skin.php');
+
+if ($is_admin == 'super') // 최고관리자 통과
+    ;
+else if ($is_admin == 'group') { // 그룹관리자
+    $mb = get_member($write['mb_id']);
+    if ($member['mb_id'] != $group['gr_admin']) // 자신이 관리하는 그룹인가?
+        alert('자신이 관리하는 그룹의 게시판이 아니므로 삭제할 수 없습니다.');
+    else if ($member['mb_level'] < $mb['mb_level']) // 자신의 레벨이 크거나 같다면 통과
+        alert('자신의 권한보다 높은 권한의 회원이 작성한 글은 삭제할 수 없습니다.');
+} else if ($is_admin == 'board') { // 게시판관리자이면
+    $mb = get_member($write['mb_id']);
+    if ($member['mb_id'] != $board['bo_admin']) // 자신이 관리하는 게시판인가?
+        alert('자신이 관리하는 게시판이 아니므로 삭제할 수 없습니다.');
+    else if ($member['mb_level'] < $mb['mb_level']) // 자신의 레벨이 크거나 같다면 통과
+        alert('자신의 권한보다 높은 권한의 회원이 작성한 글은 삭제할 수 없습니다.');
+} else if ($member['mb_id']) {
+    if ($member['mb_id'] !== $write['mb_id'])
+        alert('자신의 글이 아니므로 삭제할 수 없습니다.');
+} else {
+    if ($write['mb_id'])
+        alert('로그인 후 삭제하세요.', G5_BBS_URL.'/login.php?url='.urlencode(get_pretty_url($bo_table, $wr_id)));
+    else if (!check_password($wr_password, $write['wr_password']))
+        alert('비밀번호가 틀리므로 삭제할 수 없습니다.');
+}
+
+// $len = strlen($write['wr_reply']);
+// if ($len < 0) $len = 0;
+// $reply = substr($write['wr_reply'], 0, $len);
+
+// // 원글만 구한다.
+// $sql = " select count(*) as cnt from $write_table
+//             where wr_reply like '$reply%'
+//             and wr_id <> '{$write['wr_id']}'
+//             and wr_num = '{$write['wr_num']}'
+//             and wr_is_comment = 0 ";
+// $row = sql_fetch($sql);
+// if ($row['cnt'] && !$is_admin)
+//     alert('이 글과 관련된 답변글이 존재하므로 삭제 할 수 없습니다.\\n\\n우선 답변글부터 삭제하여 주십시오.');
+
+// 코멘트 달린 원글의 삭제 여부
+// $sql = " select count(*) as cnt from $write_table
+//             where wr_parent = '$wr_id'
+//             and mb_id <> '{$member['mb_id']}'
+//             and wr_is_comment = 1 ";
+// $row = sql_fetch($sql);
+// if ($row['cnt'] >= $board['bo_count_delete'] && !$is_admin)
+//     alert('이 글과 관련된 코멘트가 존재하므로 삭제 할 수 없습니다.\\n\\n코멘트가 '.$board['bo_count_delete'].'건 이상 달린 원글은 삭제할 수 없습니다.');
+
 
 // 사용자 코드 실행
-@include_once($board_skin_path.'/delete_all.skin.php');
+@include_once($board_skin_path.'/delete.skin.php');
+
 for ($d=$chk_count-1; $d>=0; $d--){
 
     $act = isset($act) ? strip_tags($act) : '';
@@ -38,23 +81,23 @@ for ($d=$chk_count-1; $d>=0; $d--){
 
     $sw = 'move';
 
-    $sql = " select distinct wr_num from $write_table where wr_id in ({$tmp_array[$d]}) order by wr_id ";
+    $sql = " select * from $write_table where wr_id in ({$tmp_array[$d]}) order by wr_id ";
     $result = sql_query($sql);   
     while ($row = sql_fetch_array($result))
     {
-        
         $save[$cnt]['wr_contents'] = array();
 
         $wr_num = $row['wr_num'];
         for ($i=0; $i<1; $i++)
         {
-            $move_bo_table = "trash";
+            
+            $move_bo_table = $row['wr_1']; // 복구할 테이블명
 
             // 취약점 18-0075 참고
             $sql = "select * from {$g5['board_table']} where bo_table like '".sql_real_escape_string($move_bo_table)."' ";
             $move_board = sql_fetch($sql);
-           
             // 존재하지 않다면
+            
             if( !$move_board['bo_table'] ) continue;
 
             
@@ -70,7 +113,9 @@ for ($d=$chk_count-1; $d>=0; $d--){
             $next_wr_num = get_next_num($move_write_table);
 
             $sql2 = " select * from $write_table where wr_num = '$wr_num' order by wr_parent, wr_is_comment, wr_comment desc, wr_id ";
+     
             $result2 = sql_query($sql2);
+            
             while ($row2 = sql_fetch_array($result2))
             {
                 $save[$cnt]['wr_contents'][] = $row2['wr_content'];
@@ -85,7 +130,7 @@ for ($d=$chk_count-1; $d>=0; $d--){
                         $log_tag2 = '';
                     }
 
-                    $row2['wr_content'] .= "\n".$log_tag1.'[이 게시물은 '.$nick.'님에 의해 '.G5_TIME_YMDHIS.' '.$board['bo_subject'].'에서 '.($sw == 'copy' ? '복사' : '삭제').' 되어 임시게시판에 저장됨]'.$log_tag2;
+                    //$row2['wr_content'] .= "\n".$log_tag1.'[이 게시물은 '.$nick.'님에 의해 '.G5_TIME_YMDHIS.' '.$board['bo_subject'].'에서 '.($sw == 'copy' ? '복사' : '삭제').' 되어 임시게시판에 저장됨]'.$log_tag2;
                 }
 
                 // 게시글 추천, 비추천수
@@ -121,8 +166,8 @@ for ($d=$chk_count-1; $d>=0; $d--){
                                 wr_file = '{$row2['wr_file']}',
                                 wr_last = '{$row2['wr_last']}',
                                 wr_ip = '{$row2['wr_ip']}',
-                                wr_1 = '".$bo_table."',
-                                wr_2 = '".G5_TIME_YMDHIS."',
+                                wr_1 = '".addslashes($row2['wr_1'])."',
+                                wr_2 = '".addslashes($row2['wr_2'])."',
                                 wr_3 = '".addslashes($row2['wr_3'])."',
                                 wr_4 = '".addslashes($row2['wr_4'])."',
                                 wr_5 = '".addslashes($row2['wr_5'])."',
@@ -130,11 +175,11 @@ for ($d=$chk_count-1; $d>=0; $d--){
                                 wr_7 = '".addslashes($row2['wr_7'])."',
                                 wr_8 = '".addslashes($row2['wr_8'])."',
                                 wr_9 = '".addslashes($row2['wr_9'])."',
-                                wr_10 = '".addslashes($row2['wr_10'])."' ";                            
-                sql_query($sql);
-              
-                $count_write++;
+                                wr_10 = '".addslashes($row2['wr_10'])."' ";
                 
+                sql_query($sql);
+                
+                $count_write++;
 
                 $insert_id = sql_insert_id();
 
@@ -178,12 +223,13 @@ for ($d=$chk_count-1; $d>=0; $d--){
                                         bf_type = '{$row3['bf_type']}',
                                         bf_datetime = '{$row3['bf_datetime']}' ";
                         sql_query($sql);
-
+                        
                         $count_comment++;
 
                         if ($sw == 'move' && $row3['bf_file'])
                             $save[$cnt]['bf_file'][$k] = $src_dir.'/'.$row3['bf_file'];
                     }
+
                     if ($sw == 'move' && $i == 0)
                     {
                         // 스크랩 이동

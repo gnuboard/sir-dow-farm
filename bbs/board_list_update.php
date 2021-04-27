@@ -7,7 +7,6 @@ $post_btn_submit = isset($_POST['btn_submit']) ? clean_xss_tags($_POST['btn_subm
 if(!$count) {
     alert(addcslashes($post_btn_submit, '"\\/').' 하실 항목을 하나 이상 선택하세요.');
 }
-
 if($post_btn_submit === '선택삭제') {
     include './delete_all.php';
 } else if($post_btn_submit === '선택복사') {
@@ -16,6 +15,11 @@ if($post_btn_submit === '선택삭제') {
 } else if($post_btn_submit === '선택이동') {
     $sw = 'move';
     include './move.php';
+} else if($post_btn_submit === '선택복구') {
+    $sw = 'move';
+   include './trash_restore_all.php';
+} else if($post_btn_submit === '영구삭제') { 
+    include './trash_delete_all.php';
 } else {
     alert('올바른 방법으로 이용해 주세요.');
 }
