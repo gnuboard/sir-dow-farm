@@ -78,6 +78,9 @@ if (($member['mb_id'] && ($member['mb_id'] === $write['mb_id'])) || $is_admin) {
     $update_href = short_url_clean(G5_BBS_URL.'/write.php?w=u&amp;bo_table='.$bo_table.'&amp;wr_id='.$wr_id.'&amp;page='.$page.$qstr);
     set_session('ss_delete_token', $token = uniqid(time()));
     $delete_href = G5_BBS_URL.'/delete.php?bo_table='.$bo_table.'&amp;wr_id='.$wr_id.'&amp;token='.$token.'&amp;page='.$page.urldecode($qstr);
+    if($bo_table == 'trash'){
+        $delete_href = G5_BBS_URL.'/trash_delete.php?bo_table='.$bo_table.'&amp;wr_id='.$wr_id.'&amp;token='.$token.'&amp;page='.$page.urldecode($qstr);
+    }
 }
 else if (!$write['mb_id']) { // 회원이 쓴 글이 아니라면
     $update_href = G5_BBS_URL.'/password.php?w=u&amp;bo_table='.$bo_table.'&amp;wr_id='.$wr_id.'&amp;page='.$page.$qstr;
@@ -88,6 +91,9 @@ else if (!$write['mb_id']) { // 회원이 쓴 글이 아니라면
 $copy_href = $move_href = '';
 if ($write['wr_reply'] == '' && ($is_admin == 'super' || $is_admin == 'group')) {
     $copy_href = G5_BBS_URL.'/move.php?sw=copy&amp;bo_table='.$bo_table.'&amp;wr_id='.$wr_id.'&amp;page='.$page.$qstr;
+    if($bo_table == 'trash'){
+        $copy_href = G5_BBS_URL.'/trash_restore.php?bo_table='.$bo_table.'&amp;wr_id='.$wr_id.'&amp;token='.$token.'&amp;page='.$page.urldecode($qstr);
+    }
     $move_href = G5_BBS_URL.'/move.php?sw=move&amp;bo_table='.$bo_table.'&amp;wr_id='.$wr_id.'&amp;page='.$page.$qstr;
 }
 

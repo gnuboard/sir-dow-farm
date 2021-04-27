@@ -131,9 +131,15 @@ function no_comma(data)
 }
 
 // 삭제 검사 확인
-function del(href)
+function del(href, type)
 {
-    if(confirm("한번 삭제한 자료는 복구할 방법이 없습니다.\n\n정말 삭제하시겠습니까?")) {
+    memt = '';
+    if(type=='del'){
+        ment = "삭제한 자료는 휴지통 게시판으로 이동되며 7일이 지나면 자동삭제됩니다.\n\n그래도 삭제하시겠습니까?";
+    }else{
+        ment = "휴지통에서 삭제하신 글은 복구할 수 없습니다.\n\n그래도 삭제하시겠습니까?";
+    }
+    if(confirm(ment)) {
         var iev = -1;
         if (navigator.appName == 'Microsoft Internet Explorer') {
             var ua = navigator.userAgent;
@@ -516,15 +522,6 @@ var win_poll = function(href) {
 }
 
 /**
- * 쿠폰
- **/
-var win_coupon = function(href) {
-    var new_win = window.open(href, "win_coupon", "left=100,top=100,width=700, height=600, scrollbars=1");
-    new_win.focus();
-}
-
-
-/**
  * 스크린리더 미사용자를 위한 스크립트 - 지운아빠 2013-04-22
  * alt 값만 갖는 그래픽 링크에 마우스오버 시 title 값 부여, 마우스아웃 시 title 값 제거
  **/
@@ -618,11 +615,6 @@ $(function(){
         return false;
     });
     */
-
-    $(".win_coupon").click(function() {
-        win_coupon(this.href);
-        return false;
-    });
 
     // 사이드뷰
     var sv_hide = false;

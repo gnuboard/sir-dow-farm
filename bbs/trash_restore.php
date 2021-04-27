@@ -5,7 +5,7 @@ $delete_token = get_session('ss_delete_token');
 set_session('ss_delete_token', '');
 
 if (!($token && $delete_token == $token))
-    alert('토큰 에러로 삭제 불가합니다.');
+    alert('토큰 에러로 복구 불가합니다.');
 
 //$wr = sql_fetch(" select * from $write_table where wr_id = '$wr_id' ");
 
@@ -94,7 +94,7 @@ $cnt = 0;
 
 $sw = 'move';
 
-$sql = " select distinct wr_num from $write_table where wr_id in ({$wr_id}) order by wr_id ";
+$sql = " select * from $write_table where wr_id in ({$wr_id}) order by wr_id ";
 $result = sql_query($sql);
 while ($row = sql_fetch_array($result))
 {
@@ -104,12 +104,13 @@ while ($row = sql_fetch_array($result))
     $wr_num = $row['wr_num'];
     for ($i=0; $i<1; $i++)
     {
-        $move_bo_table = "trash";
+        $move_bo_table = $row['wr_1']; // 복구할 테이블명
 
         // 취약점 18-0075 참고
         $sql = "select * from {$g5['board_table']} where bo_table like '".sql_real_escape_string($move_bo_table)."' ";
         $move_board = sql_fetch($sql);
         // 존재하지 않다면
+        
         if( !$move_board['bo_table'] ) continue;
 
         
@@ -140,7 +141,7 @@ while ($row = sql_fetch_array($result))
                     $log_tag2 = '';
                 }
 
-                $row2['wr_content'] .= "\n".$log_tag1.'[이 게시물은 '.$nick.'님에 의해 '.G5_TIME_YMDHIS.' '.$board['bo_subject'].'에서 '.($sw == 'copy' ? '복사' : '삭제').' 되어 임시게시판에 저장됨]'.$log_tag2;
+                //$row2['wr_content'] .= "\n".$log_tag1.'[이 게시물은 '.$nick.'님에 의해 '.G5_TIME_YMDHIS.' '.$board['bo_subject'].'에서 '.($sw == 'copy' ? '복사' : '삭제').' 되어 임시게시판에 저장됨]'.$log_tag2;
             }
 
             // 게시글 추천, 비추천수
@@ -177,7 +178,7 @@ while ($row = sql_fetch_array($result))
                              wr_last = '{$row2['wr_last']}',
                              wr_ip = '{$row2['wr_ip']}',
                              wr_1 = '".$bo_table."',
-                             wr_2 = '".G5_TIME_YMDHIS."',
+                             wr_2 = '".addslashes($row2['wr_2'])."',
                              wr_3 = '".addslashes($row2['wr_3'])."',
                              wr_4 = '".addslashes($row2['wr_4'])."',
                              wr_5 = '".addslashes($row2['wr_5'])."',
@@ -188,9 +189,8 @@ while ($row = sql_fetch_array($result))
                              wr_10 = '".addslashes($row2['wr_10'])."' ";
             
             sql_query($sql);
-
-            $count_write++;
             
+            $count_write++;
 
             $insert_id = sql_insert_id();
 
@@ -234,7 +234,7 @@ while ($row = sql_fetch_array($result))
                                      bf_type = '{$row3['bf_type']}',
                                      bf_datetime = '{$row3['bf_datetime']}' ";
                     sql_query($sql);
-
+                    
                     $count_comment++;
 
                     if ($sw == 'move' && $row3['bf_file'])
@@ -327,7 +327,7 @@ while ($row = sql_fetch_array($result))
         if (!delete_point($row['mb_id'], $bo_table, $row['wr_id'], '댓글'))
             insert_point($row['mb_id'], $board['bo_comment_point'] * (-1), "{$board['bo_subject']} {$write['wr_id']}-{$row['wr_id']} 댓글삭제");
 
-       
+
     }
 }
 
