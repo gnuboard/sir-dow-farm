@@ -7,8 +7,7 @@ test.php
 *.key
 *.sh
 log
-g5_tree/
-yc5_tree/
+g5_tree
 cheditor5.*/
 ckeditor*/
 log/
